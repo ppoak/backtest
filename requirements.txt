@@ -1,0 +1,4 @@
+akshare
+backtrader
+pandas
+numpy
