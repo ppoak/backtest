@@ -1,21 +1,19 @@
-import akshare as ak
-import pandas as pd
-import quool as ql
-import backtrader as bt
+import bearalpha as ba
 
 
-@ql.Cache(prefix='stockmarketdaily')
-def marketdaily(code: str, start: str, end: str, fromdate: str = None, todate: str = None):
-    data = ak.stock_zh_a_hist(symbol=code, period='daily', start_date=start, end_date=end)
-    data = data.rename(columns={'日期': 'datetime', '开盘': 'open', '收盘': 'close', '最高': 'high',
-        '最低': 'low', '成交量': 'volume'}).drop(['成交额', '振幅', '涨跌幅', 
-        '换手率', '涨跌额'], axis=1).set_index('datetime')
-    data.index = pd.to_datetime(data.index)
-    fromdate = ql.str2time(fromdate) if fromdate else data.index[0]
-    todate = ql.str2time(todate) if todate else data.index[-1]
-    feed = bt.feeds.PandasData(dataname=data, fromdate=fromdate, todate=todate)
-    return feed
+@ba.Cache(prefix='backtest_market_daily', expire_time=18000)
+def market_daily(
+    code: str, 
+    start: str, 
+    end: str, 
+) -> ba.DataFrame:
+    data = ba.AkShare.market_daily(code=code, start=start, end=end)
+    data = data.rename(columns={'复权开盘': 'open', '复权收盘': 'close', '复权最高': 'high',
+        '复权最低': 'low', '成交量': 'volume'}).loc[:, ['open', 'close', 'high', 'low', 'volume']]
+    data.index.name = 'datetime'
+    data.index = ba.to_datetime(data.index)
+    return data
 
 
 if __name__ == '__main__':
-    print(marketdaily('000001.SZ', '2019-01-01', '2019-01-31'))
+    print(market_daily('000001.SZ', '2019-01-01', '2019-01-31'))

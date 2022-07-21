@@ -1,10 +1,9 @@
-import backtrader as bt
-import quool as ql
+import bearalpha as ba
 from ..indicators import *
 
 
 
-class GridStrategy(ql.Strategy):
+class GridStrategy(ba.Strategy):
     params = (('cashnum', 5),)
     
     def __init__(self) -> None:
@@ -16,7 +15,7 @@ class GridStrategy(ql.Strategy):
         self.cashes = [self.broker.getcash() / self.p.cashnum for _ in range(self.p.cashnum)]
         self.holds = []
     
-    def notify_order(self, order: bt.Order):
+    def notify_order(self, order: ba.Order):
         if order.status in [order.Created, order.Accepted, order.Submitted]:
             return
         elif order.status in [order.Completed]:
@@ -34,19 +33,19 @@ class GridStrategy(ql.Strategy):
         if self.cashes:
             if grid == 0:
                 self.order = self.buy(size=self.cashes[-1] // self.data.low[0],
-                    exectype=bt.Order.Limit, price=self.data.low[0])
+                    exectype=ba.Order.Limit, price=self.data.low[0])
             else:
                 self.order = self.buy(size=self.cashes[-1] // self.levels[int(grid - 1)][0],
-                    exectype=bt.Order.Limit, price=self.levels[int(grid - 1)][0])
+                    exectype=ba.Order.Limit, price=self.levels[int(grid - 1)][0])
         else:
             self.log(f'Grid drop, no cash to buy', hint='WARN')
 
     def sellgrid(self, grid: int):
         if self.holds:
             if grid == 4:
-                self.order = self.sell(size=self.holds[-1], exectype=bt.Order.Limit, price=self.data.high[0])
+                self.order = self.sell(size=self.holds[-1], exectype=ba.Order.Limit, price=self.data.high[0])
             else:
-                self.order = self.sell(size=self.holds[-1], exectype=bt.Order.Limit, price=self.levels[int(grid)][0])
+                self.order = self.sell(size=self.holds[-1], exectype=ba.Order.Limit, price=self.levels[int(grid)][0])
         else:
             self.log(f'Grid raise, no holds to sell', hint='WARN')
 

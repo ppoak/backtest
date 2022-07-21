@@ -1,4 +1,1 @@
-akshare
-backtrader
-pandas
-numpy
+bearalpha

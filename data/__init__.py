@@ -1,2 +1,2 @@
-from .fund import etffeedsina
-from .stock import marketdaily
+from .fund import etf_market_daily
+from .stock import market_daily

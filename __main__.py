@@ -1,11 +1,11 @@
-from backtest.core import BackTest
+import bearalpha as ba
 from .data import *
 from .indicators import *
 from .strategies import *
 
 
 config = dict(
-    datafetcher = marketdaily,
+    datafetcher = market_daily,
     cash = 1000000,
     fetcherargs = dict(
         code = '600362',
@@ -19,6 +19,7 @@ config = dict(
 )
 
 if __name__ == "__main__":
-    runner = BackTest(config)
-    runner()
+    fetcher = config['datafetcher']
+    data: ba.DataFrame = fetcher(**config['fetcherargs'])
+    data.backtrader.run(SMACrossStrategy)
     

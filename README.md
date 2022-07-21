@@ -1,11 +1,11 @@
 # Backtest
 
-Backtest is a submodule of the project [bearalpha](https://github.com/ppoak/bearalpha), basing on backtrader and quools
+Backtest is a submodule of the project [BearAlpha](https://github.com/ppoak/bearalpha), basing on bearalpha
 
 ## Installation
 
 ```shell
-git clone https://github.com/ppoak/bearalpha
+git clone https://github.com/ppoak/BearAlpha
 git submodule update backtester
 ```
 

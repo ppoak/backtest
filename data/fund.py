@@ -1,20 +1,13 @@
-import akshare as ak
-import pandas as pd
-import backtrader as bt
-import quool as ql
+import bearalpha as ba
 
 
-@ql.Cache(prefix='etffeedsina')
-def etffeedsina(code: str, fromdate: str = None, todate: str = None):
-    data = ak.fund_etf_hist_sina(symbol=code)
-    data = data.rename(columns={'date': 'datetime'})
-    data['datetime'] = pd.to_datetime(data['datetime'])
+@ba.Cache(prefix='backtest_etf_market_daily', expire_time=18000)
+def etf_market_daily(code: str, start: str = None, end: str = None):
+    data = ba.AkShare.etf_market_daily(code, start, end).loc['累计净值']
+    data = data.rename(columns={'净值日期': 'datetime', '累计净值': 'close'})
     data = data.set_index('datetime')
-    fromdate = ql.str2time(fromdate) if fromdate else data.index[0]
-    todate = ql.str2time(todate) if todate else data.index[-1]
-    feed = bt.feeds.PandasData(dataname=data, fromdate=fromdate, todate=todate)
-    return feed
+    return data
 
 
 if __name__ == "__main__":
-    etffeedsina('sh510300', fromdate='2019-01-01', todate='2019-01-31')
+    etf_market_daily('sh510300', fromdate='2019-01-01', todate='2019-01-31')
