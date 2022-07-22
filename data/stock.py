@@ -3,16 +3,20 @@ import bearalpha as ba
 
 @ba.Cache(prefix='backtest_market_daily', expire_time=18000)
 def market_daily(
-    code: str, 
-    start: str, 
-    end: str, 
+    code: 'str | list', 
+    start: str = None, 
+    end: str = None, 
 ) -> ba.DataFrame:
-    data = ba.AkShare.market_daily(code=code, start=start, end=end)
-    data = data.rename(columns={'复权开盘': 'open', '复权收盘': 'close', '复权最高': 'high',
-        '复权最低': 'low', '成交量': 'volume'}).loc[:, ['open', 'close', 'high', 'low', 'volume']]
-    data.index.name = 'datetime'
-    data.index = ba.to_datetime(data.index)
-    return data
+    codes = ba.item2list(code)
+    datas = []
+    for c in codes:
+        data = ba.AkShare.market_daily(code=c, start=start, end=end)
+        data = data.rename(columns={'复权开盘': 'open', '复权收盘': 'close', '复权最高': 'high',
+            '复权最低': 'low', '成交量': 'volume'}).loc[:, ['open', 'close', 'high', 'low', 'volume']]
+        data.index = ba.MultiIndex.from_product([data.index, [c]], names=['datetime', 'asset'])
+        datas.append(data)
+    datas = ba.concat(datas, axis=0).sort_index()
+    return datas
 
 
 if __name__ == '__main__':

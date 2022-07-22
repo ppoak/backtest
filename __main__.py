@@ -1,4 +1,3 @@
-from backtest.strategies.trend import BollingStrategy
 import bearalpha as ba
 from .data import *
 from .indicators import *
@@ -9,7 +8,7 @@ config = dict(
     datafetcher = market_daily,
     cash = 1000000,
     fetcherargs = dict(
-        code = '600348.SH',
+        code = ['600348.SH', '000001.SZ'],
         start = '20190101',
         end = '20220701',
     ),
